@@ -1,0 +1,1 @@
+be more automatic until you finish up the task at hand if you encounter an error try to fix it until you get rid of the error use context7 mcp serv
