@@ -48,6 +48,11 @@ interface AppState {
   results: any[]
   addResult: (result: any) => void
   clearResults: () => void
+
+  // Files state
+  files: any[]
+  setFiles: (files: any[]) => void
+  refreshFiles: () => Promise<void>
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -107,4 +112,25 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((state) => ({ results: [...state.results, result] }))
   },
   clearResults: () => set({ results: [] }),
+
+  // Files state
+  files: [],
+  setFiles: (files) => set({ files }),
+  refreshFiles: async () => {
+    try {
+      const response = await fetch('/api/files')
+      if (response.ok) {
+        const data = await response.json()
+        // Flatten the files structure for easier access
+        const allFiles = [
+          ...(data.files.downloads || []),
+          ...(data.files.processed || []),
+          ...(data.files.uploads || [])
+        ]
+        set({ files: allFiles })
+      }
+    } catch (error) {
+      console.error('Error refreshing files:', error)
+    }
+  },
 }))

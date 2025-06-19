@@ -28,9 +28,10 @@ const DownloadTab: React.FC = () => {
 
     setIsLoading(true)
     try {
-      const info = await videoApi.getVideoInfo(url)
+      const response = await videoApi.getVideoInfo(url)
+      const info = response.data || response // Handle both response formats
       setVideoInfo(info)
-      if (info.formats.length > 0) {
+      if (info.formats && info.formats.length > 0) {
         setSelectedFormat(info.formats[0].format_id)
       }
     } catch (error) {
@@ -119,9 +120,9 @@ const DownloadTab: React.FC = () => {
             <CardDescription className="flex items-center space-x-4">
               <span>By {videoInfo.uploader}</span>
               <span>•</span>
-              <span>{videoInfo.view_count?.toLocaleString()} views</span>
+              <span>{videoInfo.viewCount?.toLocaleString()} views</span>
               <span>•</span>
-              <span>{videoInfo.upload_date}</span>
+              <span>{videoInfo.uploadDate}</span>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -182,6 +183,21 @@ const DownloadTab: React.FC = () => {
                   <span>{Math.round(downloadProgress)}%</span>
                 </div>
                 <Progress value={downloadProgress} className="w-full" />
+              </div>
+            )}
+
+            {/* Download Complete */}
+            {downloadProgress === 100 && !isDownloading && (
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <Download className="w-5 h-5 text-green-600" />
+                  <div>
+                    <p className="font-medium text-green-800 dark:text-green-200">Download Complete!</p>
+                    <p className="text-sm text-green-600 dark:text-green-400">
+                      Your video has been downloaded. Check the Files tab to view and manage your downloads.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </CardContent>

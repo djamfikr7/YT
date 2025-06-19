@@ -1,14 +1,28 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
-import { Download, Music, FileText, Languages, Video, Settings } from 'lucide-react'
+import { Download, Music, FileText, Languages, Video, Settings, Folder } from 'lucide-react'
 import Header from './components/Header'
 import DownloadTab from './components/DownloadTab'
 import ExtractTab from './components/ExtractTab'
 import TranscribeTab from './components/TranscribeTab'
 import TranslateTab from './components/TranslateTab'
 import ManipulateTab from './components/ManipulateTab'
+import FilesTab from './components/FilesTab'
+import { useAppStore } from './store'
 
 function App() {
+  const { theme } = useAppStore()
+
+  // Apply theme to document
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
+  }, [theme])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <Header />
@@ -28,7 +42,7 @@ function App() {
 
           {/* Main Tabs */}
           <Tabs defaultValue="download" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsList className="grid w-full grid-cols-6 mb-8">
               <TabsTrigger value="download" className="flex items-center space-x-2">
                 <Download className="w-4 h-4" />
                 <span className="hidden sm:inline">Download</span>
@@ -48,6 +62,10 @@ function App() {
               <TabsTrigger value="manipulate" className="flex items-center space-x-2">
                 <Video className="w-4 h-4" />
                 <span className="hidden sm:inline">Edit</span>
+              </TabsTrigger>
+              <TabsTrigger value="files" className="flex items-center space-x-2">
+                <Folder className="w-4 h-4" />
+                <span className="hidden sm:inline">Files</span>
               </TabsTrigger>
             </TabsList>
 
@@ -69,6 +87,10 @@ function App() {
 
             <TabsContent value="manipulate" className="space-y-6">
               <ManipulateTab />
+            </TabsContent>
+
+            <TabsContent value="files" className="space-y-6">
+              <FilesTab />
             </TabsContent>
           </Tabs>
 

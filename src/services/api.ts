@@ -32,11 +32,12 @@ api.interceptors.response.use(
 
 export interface VideoInfo {
   title: string
-  duration: number
+  duration: string // Changed to string to match backend response format
   thumbnail: string
   uploader: string
-  upload_date: string
-  view_count: number
+  uploadDate: string // Changed to camelCase to match backend
+  viewCount: number // Changed to camelCase to match backend
+  description?: string // Added optional description field
   formats: VideoFormat[]
 }
 
@@ -99,7 +100,7 @@ export const videoApi = {
   // Transcribe audio
   transcribeAudio: async (options: TranscriptionOptions): Promise<{ jobId: string }> => {
     const formData = new FormData()
-    formData.append('audio', options.audioFile)
+    formData.append('audioFile', options.audioFile) // Fixed field name to match backend
     if (options.language) formData.append('language', options.language)
     if (options.includeTimestamps) formData.append('includeTimestamps', 'true')
     if (options.outputFormat) formData.append('outputFormat', options.outputFormat)
@@ -121,7 +122,7 @@ export const videoApi = {
   // Video manipulation
   manipulateVideo: async (options: VideoManipulationOptions): Promise<{ jobId: string }> => {
     const formData = new FormData()
-    formData.append('video', options.videoFile)
+    formData.append('videoFile', options.videoFile) // Fixed field name to match backend
     formData.append('operation', options.operation)
     formData.append('parameters', JSON.stringify(options.parameters))
 
@@ -168,6 +169,21 @@ export const videoApi = {
         'Content-Type': 'multipart/form-data',
       },
     })
+    return response.data
+  },
+
+  // File management
+  getFiles: async (): Promise<{
+    downloads: any[]
+    processed: any[]
+    uploads: any[]
+  }> => {
+    const response = await api.get('/files')
+    return response.data.files
+  },
+
+  deleteFile: async (filename: string): Promise<{ success: boolean }> => {
+    const response = await api.delete(`/files/${filename}`)
     return response.data
   },
 }
